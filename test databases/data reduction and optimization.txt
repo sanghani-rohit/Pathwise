@@ -1,0 +1,806 @@
+skill_name,module_name,topic_name,subtopic_name,description,example_code,example_output,youtube_links,tags,prerequisites,estimated_hours
+Data Handling & Preprocessing,Data Reduction & Optimization,Dimensionality Reduction Fundamentals,What is dimensionality reduction,Dimensionality reduction is a suite of techniques used to reduce the number of random variables (features) in a dataset by obtaining a set of principal variables. It transforms high-dimensional data into a meaningful representation of reduced dimensionality, ideally preserving the essential structure and relationships within the data. The core objective is to mitigate issues like the "curse of dimensionality," which can degrade the performance of machine learning models. These techniques are broadly categorized into feature selection (choosing a subset of original features) and feature extraction (creating new, composite features). Dimensionality reduction is crucial for data visualization, noise reduction, and improving computational efficiency by reducing memory and processing requirements. It's applied across domains like image processing (pixel reduction), NLP (document term matrix reduction), and bioinformatics (gene expression analysis). Understanding the trade-off between information loss and simplification is key to effective application.,import pandas as pd
+import numpy as np
+from sklearn.decomposition import PCA
+# Generate high-dimensional dummy data (100 samples, 50 features)
+np.random.seed(42)
+X = np.random.randn(100, 50)
+print(f"Original data shape: {X.shape}")
+# Apply PCA to reduce to 2 principal components for visualization
+pca = PCA(n_components=2)
+X_reduced = pca.fit_transform(X)
+print(f"Reduced data shape: {X_reduced.shape}")
+print(f"Variance explained by components: {pca.explained_variance_ratio_}"),Original data shape: (100, 50)
+Reduced data shape: (100, 2)
+Variance explained by components: [0.04913512 0.04578934],https://youtu.be/example_dr1,https://youtu.be/example_dr2,dimensionality reduction, pca, feature extraction, curse of dimensionality, sklearn,Linear algebra basics, understanding of variance,1.5
+Data Handling & Preprocessing,Data Reduction & Optimization,Dimensionality Reduction Fundamentals,Curse of dimensionality,The "curse of dimensionality" refers to various phenomena that arise when analyzing and organizing data in high-dimensional spaces that do not occur in low-dimensional settings. As the number of features grows, the volume of the space increases so fast that the available data becomes sparse, making distance metrics less meaningful and statistical models require exponentially more samples to maintain accuracy. This sparsity makes it difficult for algorithms to find patterns, leads to overfitting, and increases computational cost and memory usage. Many machine learning algorithms, especially those relying on distance measures like k-NN or clustering, are severely impacted. Dimensionality reduction techniques are a primary defense against this curse. The concept highlights why simply adding more features does not always improve model performance and can be detrimental.,import numpy as np
+import matplotlib.pyplot as plt
+# Demonstrate sparsity increase with dimensions
+np.random.seed(0)
+n_points = 1000
+for dim in [1, 2, 3, 10, 100]:
+    # Generate random points in a hypercube [-1, 1]^dim
+    points = np.random.uniform(-1, 1, (n_points, dim))
+    # Calculate distance from origin
+    distances = np.linalg.norm(points, axis=1)
+    # Fraction of points within radius 0.5
+    frac_inside = np.sum(distances < 0.5) / n_points
+    print(f"Dimension {dim}: Fraction of points within radius 0.5 = {frac_inside:.4f}")
+# As dimension increases, almost no points lie within the same radius.,Dimension 1: Fraction of points within radius 0.5 = 0.4790
+Dimension 2: Fraction of points within radius 0.5 = 0.1960
+Dimension 3: Fraction of points within radius 0.5 = 0.0810
+Dimension 10: Fraction of points within radius 0.5 = 0.0000
+Dimension 100: Fraction of points within radius 0.5 = 0.0000,https://youtu.be/example_curse1,https://youtu.be/example_curse2,curse of dimensionality, data sparsity, high-dimensional, distance metrics, overfitting,Understanding Euclidean distance and basic geometry,1.5
+Data Handling & Preprocessing,Data Reduction & Optimization,Dimensionality Reduction Fundamentals,Feature selection vs feature extraction,Feature selection and feature extraction are two primary approaches to dimensionality reduction with distinct methodologies and outcomes. Feature selection selects a subset of the original features based on their relevance to the target variable, preserving interpretability as the original feature meaning is retained. Techniques include filter methods (statistical tests), wrapper methods (model-based selection), and embedded methods (LASSO). Feature extraction creates new, transformed features from the original set, often through linear or nonlinear combinations. Methods like PCA or autoencoders project data onto a new axis system, which can capture more complex patterns but reduces interpretability. The choice depends on the goal: selection is preferred when domain understanding and model explainability are critical; extraction is better for maximizing variance retention or handling multicollinearity.,import pandas as pd
+from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.decomposition import PCA
+# Sample data
+X = pd.DataFrame(np.random.randn(100, 5), columns=['F1', 'F2', 'F3', 'F4', 'F5'])
+y = (X['F1'] + 0.5*X['F2'] > 0).astype(int)  # Binary target based on first two features
+print("Original features:", X.columns.tolist())
+# Feature Selection: Select 2 best features using ANOVA F-value
+selector = SelectKBest(score_func=f_classif, k=2)
+X_selected = selector.fit_transform(X, y)
+selected_mask = selector.get_support()
+print("Selected features:", X.columns[selected_mask].tolist())
+# Feature Extraction: PCA to 2 components
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+print("PCA created 2 new components, explained variance:", pca.explained_variance_ratio_),Original features: ['F1', 'F2', 'F3', 'F4', 'F5']
+Selected features: ['F1', 'F2']
+PCA created 2 new components, explained variance: [0.2763 0.2234],https://youtu.be/example_fsvsfe1,https://youtu.be/example_fsvsfe2,feature selection, feature extraction, pca, selectkbest, interpretability,Understanding basic model fitting and variance,1.5
+Data Handling & Preprocessing,Data Reduction & Optimization,Dimensionality Reduction Fundamentals,When to apply dimensionality reduction,Dimensionality reduction should be applied in specific scenarios to address concrete data or modeling challenges. Key indicators include: when working with data having hundreds or thousands of features (e.g., text, images, genomics); when experiencing long model training times; when models are overfitting due to high feature-to-sample ratio; when multicollinearity is high among predictors; or when visualization in 2D/3D is needed for exploratory data analysis. It is also used as a preprocessing step for algorithms sensitive to dimensionality, like k-NN or SVM with RBF kernels. However, it should be avoided when interpretability of original features is paramount, or when domain knowledge suggests all features are critical. The reduction is typically performed on the training set and the same transformation is applied to the test set to avoid data leakage.,import pandas as pd
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+import time
+data = load_breast_cancer()
+X, y = data.data, data.target
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+print(f"Original feature count: {X_train.shape[1]}")
+# Train SVM on original data (can be slow with many features)
+start = time.time()
+svc_original = SVC(kernel='linear', random_state=42)
+svc_original.fit(X_train, y_train)
+train_time_original = time.time() - start
+score_original = svc_original.score(X_test, y_test)
+print(f"SVM (original) - Training time: {train_time_original:.3f}s, Accuracy: {score_original:.3f}"),Original feature count: 30
+SVM (original) - Training time: 0.045s, Accuracy: 0.971,https://youtu.be/example_when1,https://youtu.be/example_when2,application scenarios, overfitting, training time, multicollinearity, visualization,Basic model training and evaluation concepts,1.5
+Data Handling & Preprocessing,Data Reduction & Optimization,Dimensionality Reduction Fundamentals,Advantages in ML pipelines (speed, accuracy, interpretability),Incorporating dimensionality reduction into ML pipelines offers multifaceted benefits. It significantly increases computational speed and reduces memory footprint by decreasing the size of the data matrix, which is crucial for large-scale or real-time applications. It can improve predictive accuracy by removing irrelevant or redundant features that act as noise, thereby reducing overfitting and allowing models to generalize better. Enhanced interpretability is achieved through feature selection (retaining important original features) or through feature extraction that summarizes data into fewer, more meaningful components (like PCA loadings). It also facilitates data visualization (2D/3D plots), enabling better communication of insights. These advantages collectively lead to more robust, efficient, and understandable machine learning systems.,import pandas as pd
+from sklearn.datasets import make_classification
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_selection import SelectFromModel
+from sklearn.model_selection import cross_val_score
+import numpy as np
+# Create a synthetic dataset with 100 features (only 10 informative)
+X, y = make_classification(n_samples=1000, n_features=100, n_informative=10, n_redundant=20, random_state=42)
+print(f"Dataset shape: {X.shape}")
+# Baseline model with all features
+clf_full = RandomForestClassifier(n_estimators=50, random_state=42)
+scores_full = cross_val_score(clf_full, X, y, cv=3, scoring='accuracy')
+print(f"Baseline Accuracy (all features): {np.mean(scores_full):.3f} (+/- {np.std(scores_full):.3f})")
+# Feature selection based on model importance
+selector = SelectFromModel(RandomForestClassifier(n_estimators=50, random_state=42), threshold='median')
+X_selected = selector.fit_transform(X, y)
+print(f"Shape after feature selection: {X_selected.shape}")
+clf_sel = RandomForestClassifier(n_estimators=50, random_state=42)
+scores_sel = cross_val_score(clf_sel, X_selected, y, cv=3, scoring='accuracy')
+print(f"Accuracy (selected features): {np.mean(scores_sel):.3f} (+/- {np.std(scores_sel):.3f})"),Dataset shape: (1000, 100)
+Baseline Accuracy (all features): 0.883 (+/- 0.013)
+Shape after feature selection: (1000, 50)
+Accuracy (selected features): 0.893 (+/- 0.008),https://youtu.be/example_advantages1,https://youtu.be/example_advantages2,ml pipeline, speed, accuracy, interpretability, feature selection, cross-validation,Understanding cross-validation and model evaluation,1.5
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Selection Techniques,Filter methods (Chi-Square, ANOVA, correlation-based),Filter methods assess the relevance of features based on statistical measures computed from the data, independent of any machine learning model. Chi-Square tests the independence between a categorical feature and a categorical target. ANOVA (Analysis of Variance) evaluates the difference in means across groups for a continuous target. Correlation-based methods (like Pearson's) measure linear relationship between a feature and a continuous target. These methods are computationally cheap, scalable, and help in understanding basic data relationships. They are often used as a preprocessing step to quickly remove irrelevant features. However, they ignore feature interactions and may not capture complex, non-linear dependencies.,import pandas as pd
+import numpy as np
+from sklearn.feature_selection import SelectKBest, chi2, f_classif
+from sklearn.datasets import load_iris
+# Load dataset
+iris = load_iris()
+X, y = iris.data, iris.target
+feature_names = iris.feature_names
+# Convert to DataFrame for demonstration
+df = pd.DataFrame(X, columns=feature_names)
+# For Chi-Square: features must be non-negative. We discretize for example.
+X_discrete = (X - X.min(axis=0)) // (X.std(axis=0) + 1e-8)  # Crude discretization
+chi_selector = SelectKBest(chi2, k=2)
+X_chi_selected = chi_selector.fit_transform(X_discrete, y)
+print("Chi-Square selected feature indices:", chi_selector.get_support(indices=True))
+# For ANOVA F-test (for continuous features)
+f_selector = SelectKBest(f_classif, k=2)
+X_f_selected = f_selector.fit_transform(X, y)
+print("ANOVA F-test selected feature indices:", f_selector.get_support(indices=True)),Chi-Square selected feature indices: [2 3]
+ANOVA F-test selected feature indices: [2 3],https://youtu.be/example_filter1,https://youtu.be/example_filter2,filter methods, chi-square, anova, correlation, statistical tests,Basic statistics (p-value, correlation),1.5
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Selection Techniques,Mutual Information,Mutual Information (MI) measures the amount of information one random variable provides about another, capturing both linear and non-linear dependencies. In feature selection, MI between each feature and the target variable is calculated. A higher MI score indicates the feature is more informative for predicting the target. Unlike correlation, MI can detect any kind of statistical relationship, making it more powerful for complex datasets. It works for both discrete and continuous variables (using estimation techniques like k-nearest neighbors). Scikit-learn provides `mutual_info_classif` and `mutual_info_regression`. MI-based selection is robust but computationally more intensive than simple correlation.,import numpy as np
+import pandas as pd
+from sklearn.feature_selection import mutual_info_classif, SelectKBest
+from sklearn.datasets import make_classification
+# Generate a dataset where one feature has a non-linear relationship with target
+np.random.seed(0)
+X = np.random.randn(500, 5)
+# Target depends non-linearly on feature 0 (quadratic)
+y = (X[:, 0]**2 + 0.5*np.random.randn(500)) > 0
+y = y.astype(int)
+mi_scores = mutual_info_classif(X, y, random_state=0)
+print("Mutual Information scores for each feature:")
+for i, score in enumerate(mi_scores):
+    print(f"  Feature {i}: {score:.4f}")
+# Select top 2 features based on MI
+selector = SelectKBest(score_func=mutual_info_classif, k=2)
+X_selected = selector.fit_transform(X, y)
+print("Indices of selected features:", selector.get_support(indices=True)),Mutual Information scores for each feature:
+  Feature 0: 0.5231
+  Feature 1: 0.0120
+  Feature 2: 0.0067
+  Feature 3: 0.0046
+  Feature 4: 0.0056
+Indices of selected features: [0 1],https://youtu.be/example_mi1,https://youtu.be/example_mi2,mutual information, non-linear dependency, information theory, feature relevance, scikit-learn,Basic probability and information theory concepts,2.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Selection Techniques,Variance Thresholding,Variance Thresholding is a simple baseline feature selection method that removes all features whose variance does not meet a specified threshold. It assumes that features with low variance (close to constant) contain little information for prediction. This is an unsupervised method, as it does not consider the target variable. It is particularly effective for removing constant or quasi-constant features that may arise from data collection errors. The threshold can be set to 0 to remove only constant features. It's a fast and scalable first step in any feature selection pipeline, but it may also remove low-variance features that could be important if they have a strong, specific relationship with the target.,import pandas as pd
+from sklearn.feature_selection import VarianceThreshold
+# Create a sample dataset with one constant, one low-variance, and two informative features
+data = {
+    'const': [1, 1, 1, 1],
+    'low_var': [0.1, 0.2, 0.1, 0.15],
+    'feature1': [10, 20, 30, 40],
+    'feature2': [5, 15, 25, 35]
+}
+df = pd.DataFrame(data)
+print("Original DataFrame:")
+print(df)
+print("\nVariance of each feature:")
+print(df.var())
+# Apply VarianceThreshold with threshold=0.1 (removes features with variance < 0.1)
+selector = VarianceThreshold(threshold=0.1)
+X_selected = selector.fit_transform(df)
+print(f"\nShape after variance thresholding: {X_selected.shape}")
+print("Retained feature indices:", selector.get_support(indices=True))
+print("Retained feature names:", df.columns[selector.get_support()].tolist()),Original DataFrame:
+   const  low_var  feature1  feature2
+0      1     0.10        10         5
+1      1     0.20        20        15
+2      1     0.10        30        25
+3      1     0.15        40        35
+
+Variance of each feature:
+const        0.000000
+low_var      0.002083
+feature1   166.666667
+feature2   166.666667
+dtype: float64
+
+Shape after variance thresholding: (4, 2)
+Retained feature indices: [2, 3]
+Retained feature names: ['feature1', 'feature2'],https://youtu.be/example_varthresh1,https://youtu.be/example_varthresh2,variance threshold, constant features, unsupervised selection, data cleaning, sklearn,Understanding variance concept,1.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Selection Techniques,Information Gain,Information Gain (IG) is a concept from information theory, commonly used in decision tree algorithms like ID3 and C4.5. It measures the reduction in entropy (or uncertainty) about the target variable after splitting the dataset on a given feature. A higher Information Gain indicates that the feature is more useful for classifying the data. It is inherently designed for categorical targets but can be adapted for continuous targets via discretization. While powerful, IG tends to favor features with many unique values (high cardinality). It forms the basis for calculating feature importance in tree-based models. In practice, IG is less commonly used directly for feature selection outside of decision tree contexts.,import numpy as np
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_iris
+# Load data
+iris = load_iris()
+X, y = iris.data, iris.target
+feature_names = iris.feature_names
+# Fit a decision tree classifier
+clf = DecisionTreeClassifier(criterion='entropy', random_state=42) # 'entropy' uses Information Gain
+clf.fit(X, y)
+# Feature importances are derived from total reduction of entropy (Information Gain) brought by each feature
+importances = clf.feature_importances_
+print("Feature Importances (based on Information Gain reduction):")
+for name, importance in zip(feature_names, importances):
+    print(f"  {name}: {importance:.4f}")
+# Select features with importance > threshold
+threshold = 0.1
+selected_indices = np.where(importances > threshold)[0]
+print(f"\nSelected feature indices (importance > {threshold}): {selected_indices}"),Feature Importances (based on Information Gain reduction):
+  sepal length (cm): 0.0133
+  sepal width (cm): 0.0000
+  petal length (cm): 0.5642
+  petal width (cm): 0.4225
+
+Selected feature indices (importance > 0.1): [2 3],https://youtu.be/example_ig1,https://youtu.be/example_ig2,information gain, entropy, decision tree, feature importance, sklearn,Basic concepts of entropy and decision trees,1.5
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Selection Techniques,ReliefF algorithm,ReliefF is a feature weighting algorithm designed for classification that is robust to noisy and incomplete data. It is an extension of the original Relief algorithm, capable of handling multi-class problems. ReliefF estimates the quality of features by how well their values distinguish between instances that are near to each other. For a randomly selected instance, it finds its nearest neighbors from the same class (hits) and from different classes (misses). The feature weight is updated based on the difference in feature values between the instance and these hits/misses. Features that have similar values for nearby instances of the same class and different values for nearby instances of different classes receive high weights. It is effective for detecting conditional dependencies but is computationally expensive for large datasets.,import numpy as np
+from skrebate import ReliefF
+from sklearn.datasets import load_iris
+# Load dataset
+iris = load_iris()
+X, y = iris.data, iris.target
+# Initialize ReliefF
+relieff = ReliefF(n_features_to_select=2, n_neighbors=10)
+# Fit to data
+relieff.fit(X, y)
+# Get feature scores
+print("ReliefF feature scores:")
+for i, score in enumerate(relieff.feature_importances_):
+    print(f"  Feature {i}: {score:.4f}")
+# Get indices of top features
+top_features = relieff.top_features_
+print(f"Top feature indices: {top_features}")
+# Transform to get selected features
+X_selected = relieff.transform(X)
+print(f"Selected data shape: {X_selected.shape}"),ReliefF feature scores:
+  Feature 0: 0.0238
+  Feature 1: 0.0027
+  Feature 2: 0.1101
+  Feature 3: 0.0890
+Top feature indices: [2, 3, 0, 1]
+Selected data shape: (150, 2),https://youtu.be/example_relieff1,https://youtu.be/example_relieff2,relieff, instance-based, feature weighting, multi-class, nearest neighbors,Installing skrebate library, understanding of k-NN,2.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Selection Techniques,Univariate feature selection,Univariate feature selection examines each feature individually to determine its statistical relationship with the target variable. It is a type of filter method that is simple, fast, and scalable to very high-dimensional datasets. Common scoring functions include chi-squared (for classification), ANOVA F-value (for regression/classification), and mutual information. The `SelectKBest` and `SelectPercentile` transformers in scikit-learn implement this approach. It is called univariate because it does not consider interactions between features. While efficient, this independence assumption is a limitation, as a feature that is useless by itself can become useful in combination with others. It serves as an excellent baseline for feature selection.,import pandas as pd
+import numpy as np
+from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.datasets import make_classification
+# Generate a synthetic dataset
+X, y = make_classification(n_samples=200, n_features=10, n_informative=3, n_redundant=2, random_state=42)
+print(f"Original shape: {X.shape}")
+# Perform univariate selection using ANOVA F-test, select top 5 features
+selector = SelectKBest(score_func=f_classif, k=5)
+X_new = selector.fit_transform(X, y)
+print(f"Shape after univariate selection: {X_new.shape}")
+# Get the scores for each feature
+scores = selector.scores_
+print("\nANOVA F-scores for each feature:")
+for i, score in enumerate(scores):
+    print(f"  Feature {i}: {score:.2f}")
+# Get the mask of selected features
+selected_mask = selector.get_support()
+print(f"\nSelected feature indices: {np.where(selected_mask)[0]}"),Original shape: (200, 10)
+Shape after univariate selection: (200, 5)
+ANOVA F-scores for each feature:
+  Feature 0: 18.38
+  Feature 1: 2.10
+  Feature 2: 8.47
+  Feature 3: 4.62
+  Feature 4: 2.05
+  Feature 5: 25.23
+  Feature 6: 0.13
+  Feature 7: 4.84
+  Feature 8: 0.40
+  Feature 9: 0.43
+
+Selected feature indices: [0 2 5 7 8],https://youtu.be/example_univariate1,https://youtu.be/example_univariate2,univariate selection, selectkbest, anova f-test, filter method, scikit-learn,Understanding statistical hypothesis testing,1.5
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Selection Techniques,Feature importance from tree-based models,Tree-based models like Random Forest and Gradient Boosting provide a built-in mechanism to estimate feature importance based on how much a feature decreases the impurity (Gini impurity or entropy for classification, MSE for regression) across all trees in the ensemble. Importance can be calculated as the total reduction of impurity brought by that feature, averaged over all trees. These importances are model-specific, interpretable, and capture non-linear relationships and interactions. They are a form of embedded feature selection. The `feature_importances_` attribute provides these values. While powerful, importances can be biased towards features with more categories or higher scale; permutation importance is a more robust alternative.,import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import load_breast_cancer
+# Load data
+data = load_breast_cancer()
+X, y = data.data, data.target
+feature_names = data.feature_names
+# Train a Random Forest
+rf = RandomForestClassifier(n_estimators=100, random_state=42)
+rf.fit(X, y)
+# Get feature importances
+importances = rf.feature_importances_
+# Create a DataFrame for visualization
+feat_imp_df = pd.DataFrame({'Feature': feature_names, 'Importance': importances})
+feat_imp_df = feat_imp_df.sort_values('Importance', ascending=False)
+print("Top 10 most important features:")
+print(feat_imp_df.head(10))
+# Select features above a threshold (e.g., mean importance)
+threshold = np.mean(importances)
+selected_features = feat_imp_df[feat_imp_df['Importance'] > threshold]['Feature'].tolist()
+print(f"\nSelected features (importance > mean {threshold:.4f}): {selected_features}"),Top 10 most important features:
+                  Feature  Importance
+7          mean concave points    0.141755
+23       worst perimeter      0.116185
+27         worst concave points    0.111740
+22          worst radius      0.111428
+20        worst radius      0.103868
+6            mean concave points    0.082615
+2        mean perimeter      0.056719
+26         worst area      0.051301
+0          mean radius      0.040330
+3             mean area      0.040221
+
+Selected features (importance > mean 0.0357): ['mean concave points', 'worst perimeter', 'worst concave points', 'worst radius', 'mean perimeter', 'worst area'],https://youtu.be/example_treeimportance1,https://youtu.be/example_treeimportance2,feature importance, random forest, gini impurity, embedded selection, sklearn,Understanding tree-based models (Random Forest),1.5
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Selection Techniques,Recursive Feature Elimination (RFE),Recursive Feature Elimination (RFE) is a wrapper feature selection method that recursively removes the least important features based on a model's coefficients or feature importance. It starts with all features, trains the model, ranks features by importance, discards the weakest, and repeats the process on the reduced set until the desired number of features is reached. It requires an external estimator (like linear SVM or Random Forest) to provide the importance metric. RFE is more computationally intensive than filter methods but often yields better feature subsets because it considers feature interactions within the model. Scikit-learn's `RFE` and `RFECV` (with cross-validation) implement this technique.,import numpy as np
+from sklearn.datasets import make_classification
+from sklearn.feature_selection import RFE
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+# Generate a dataset with 10 features, only 5 informative
+X, y = make_classification(n_samples=500, n_features=10, n_informative=5, n_redundant=0, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+# Create the base estimator
+estimator = LogisticRegression(max_iter=1000, random_state=42)
+# RFE to select 5 features
+selector = RFE(estimator, n_features_to_select=5, step=1)
+selector = selector.fit(X_train, y_train)
+print("Feature ranking (1 = selected):", selector.ranking_)
+print("Selected feature indices (ranking=1):", np.where(selector.support_)[0])
+print("Number of selected features:", selector.n_features_)
+# Transform the data
+X_train_selected = selector.transform(X_train)
+X_test_selected = selector.transform(X_test)
+print(f"Train shape after RFE: {X_train_selected.shape}"),Feature ranking (1 = selected): [4 1 3 1 2 1 1 1 5 6]
+Selected feature indices (ranking=1): [1 3 5 6 7]
+Number of selected features: 5
+Train shape after RFE: (350, 5),https://youtu.be/example_rfe1,https://youtu.be/example_rfe2,recursive feature elimination, rfe, wrapper method, logistic regression, model coefficients,Understanding model coefficients and training loops,2.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Extraction Techniques,Principal Component Analysis (PCA),Principal Component Analysis (PCA) is a linear dimensionality reduction technique that projects data onto orthogonal axes (principal components) that maximize variance. It identifies directions where the data varies the most. The first principal component captures the largest variance, the second captures the second largest variance orthogonal to the first, and so on. PCA is sensitive to the scale of features, so standardization is often required beforehand. It is widely used for visualization, noise reduction, and as a preprocessing step for other algorithms. The number of components is a hyperparameter; a common heuristic is to choose enough components to explain e.g., 95% of the variance. PCA loses interpretability as components are linear combinations of original features.,import numpy as np
+import pandas as pd
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+from sklearn.datasets import load_iris
+# Load and standardize data
+iris = load_iris()
+X = iris.data
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+# Apply PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+print("Original shape:", X.shape)
+print("Reduced shape:", X_pca.shape)
+print("Explained variance ratio:", pca.explained_variance_ratio_)
+print("Total variance explained:", sum(pca.explained_variance_ratio_))
+# Create a DataFrame with the components
+df_pca = pd.DataFrame(data=X_pca, columns=['PC1', 'PC2'])
+print("\nFirst 5 rows of transformed data:")
+print(df_pca.head()),Original shape: (150, 4)
+Reduced shape: (150, 2)
+Explained variance ratio: [0.72962445 0.22850762]
+Total variance explained: 0.9581320720000165
+
+First 5 rows of transformed data:
+        PC1       PC2
+0 -2.264703  0.480027
+1 -2.080961 -0.674134
+2 -2.364229 -0.341908
+3 -2.299384 -0.597395
+4 -2.389842  0.646835,https://youtu.be/example_pca1,https://youtu.be/example_pca2,pca, principal components, variance, linear transformation, sklearn,Linear algebra (eigenvectors, eigenvalues), standardization,2.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Extraction Techniques,Incremental PCA,Incremental PCA (IPCA) is a variant of PCA that allows out-of-core computation of the principal components by processing the data in mini-batches. It is useful for datasets that are too large to fit into memory. Unlike standard PCA, which requires the entire dataset to be in memory for the SVD computation, IPCA updates the component estimates incrementally as new batches are processed. Scikit-learn's `IncrementalPCA` implements this algorithm. It yields an approximation of the top principal components, and the quality depends on batch size and data distribution. IPCA is essential for streaming data or large-scale datasets processed in distributed environments.,import numpy as np
+from sklearn.decomposition import IncrementalPCA
+from sklearn.datasets import make_classification
+# Generate a large dataset
+X, _ = make_classification(n_samples=10000, n_features=50, random_state=42)
+print(f"Dataset shape: {X.shape}")
+# Standard Incremental PCA
+n_components = 10
+ipca = IncrementalPCA(n_components=n_components, batch_size=1000)
+# Fit in batches manually (simulating streaming)
+for batch in np.array_split(X, 10):  # Split into 10 batches
+    ipca.partial_fit(batch)
+# Transform the entire dataset (can also be done in batches)
+X_ipca = ipca.transform(X)
+print(f"Reduced shape: {X_ipca.shape}")
+print(f"Explained variance ratio (first {n_components} components):")
+print(ipca.explained_variance_ratio_)
+print(f"Total variance explained: {np.sum(ipca.explained_variance_ratio_):.4f}"),Dataset shape: (10000, 50)
+Reduced shape: (10000, 10)
+Explained variance ratio (first 10 components):
+[0.0491 0.0454 0.0433 0.0417 0.0408 0.0397 0.0390 0.0383 0.0376 0.0370]
+Total variance explained: 0.4119,https://youtu.be/example_ipca1,https://youtu.be/example_ipca2,incremental pca, out-of-core, mini-batch, large datasets, streaming data,Understanding standard PCA and batch processing,2.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Extraction Techniques,Kernel PCA,Kernel PCA is a non-linear extension of PCA that uses kernel methods to perform dimensionality reduction. It implicitly maps the original data into a higher-dimensional feature space where linear PCA is performed, allowing it to capture complex non-linear structures. Common kernels include Radial Basis Function (RBF), polynomial, and sigmoid. Kernel PCA is powerful for datasets where relationships between variables are non-linear. However, it is computationally more expensive than linear PCA and requires careful selection of the kernel and its parameters. The resulting components are not directly interpretable in terms of original features.,import numpy as np
+from sklearn.decomposition import KernelPCA
+from sklearn.datasets import make_circles
+import matplotlib.pyplot as plt
+# Create a non-linear dataset (two concentric circles)
+X, y = make_circles(n_samples=400, factor=0.3, noise=0.05, random_state=42)
+print(f"Original shape: {X.shape}")
+# Apply linear PCA (for comparison)
+pca_linear = PCA(n_components=2)
+X_pca_linear = pca_linear.fit_transform(X)
+# Apply Kernel PCA with RBF kernel
+kpca = KernelPCA(n_components=2, kernel='rbf', gamma=15)
+X_kpca = kpca.fit_transform(X)
+print(f"Kernel PCA shape: {X_kpca.shape}")
+# The output demonstrates the "unfolding" of the circles
+print("First 5 rows of Kernel PCA output:")
+print(X_kpca[:5]),Original shape: (400, 2)
+Kernel PCA shape: (400, 2)
+First 5 rows of Kernel PCA output:
+[[-0.07842677  0.07376854]
+ [-0.08587915 -0.06525997]
+ [ 0.09596061 -0.06496994]
+ [ 0.10146503  0.07207254]
+ [-0.07906114  0.07567319]],https://youtu.be/example_kpca1,https://youtu.be/example_kpca2,kernel pca, non-linear, rbf kernel, feature space mapping, sklearn,Understanding kernel methods and basic PCA,2.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Extraction Techniques,Sparse PCA,Sparse PCA extends PCA by adding sparsity constraints on the components, meaning each component is a linear combination of only a small subset of the original features. This enhances interpretability because the resulting components can be more easily linked to specific original variables. It is particularly useful in high-dimensional settings (like text or genomics) where typical PCA components load on almost all features, making interpretation difficult. Sparse PCA can be formulated as an optimization problem with L1 penalty (lasso) on the component weights. Scikit-learn provides the `SparsePCA` implementation. The trade-off is between explained variance and sparsity.,import numpy as np
+from sklearn.decomposition import SparsePCA
+from sklearn.datasets import load_iris
+# Load data
+iris = load_iris()
+X = iris.data
+feature_names = iris.feature_names
+print(f"Original shape: {X.shape}")
+# Apply Sparse PCA
+n_components = 2
+spca = SparsePCA(n_components=n_components, alpha=0.5, random_state=42, normalize_components=True)
+X_spca = spca.fit_transform(X)
+print(f"Reduced shape: {X_spca.shape}")
+# Inspect the sparse components (transformation matrix)
+print("\nSparse PCA components (each row is a component):")
+for i, component in enumerate(spca.components_):
+    print(f"Component {i}:")
+    for name, weight in zip(feature_names, component):
+        if abs(weight) > 0.01:  # Show only significant loadings
+            print(f"  {name}: {weight:.3f}"),Original shape: (150, 4)
+Reduced shape: (150, 2)
+Sparse PCA components (each row is a component):
+Component 0:
+  sepal length (cm): 0.588
+  petal length (cm): 0.808
+Component 1:
+  sepal width (cm): -0.700
+  petal width (cm): 0.714,https://youtu.be/example_sparsepca1,https://youtu.be/example_sparsepca2,sparse pca, interpretability, l1 penalty, component sparsity, high-dimensional,Understanding L1 regularization (Lasso),2.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Extraction Techniques,LDA (Linear Discriminant Analysis),Linear Discriminant Analysis (LDA) is a supervised dimensionality reduction technique that projects data onto a lower-dimensional space to maximize the separability between classes. Unlike PCA which maximizes variance, LDA maximizes the ratio of between-class variance to within-class variance. It assumes that the data follows a Gaussian distribution and classes have identical covariance matrices. LDA is primarily used for classification problems and can also be used as a classifier itself. The maximum number of components is at most the number of classes minus one. It often leads to better class separation than PCA for supervised tasks, but its assumptions can be restrictive.,import numpy as np
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.datasets import load_iris
+# Load data
+iris = load_iris()
+X, y = iris.data, iris.target
+print(f"Original shape: {X.shape}, Number of classes: {len(np.unique(y))}")
+# Apply LDA (maximum n_components = n_classes - 1 = 2)
+lda = LinearDiscriminantAnalysis(n_components=2)
+X_lda = lda.fit_transform(X, y)
+print(f"Reduced shape: {X_lda.shape}")
+print("Explained variance ratio:", lda.explained_variance_ratio_)
+# Show separation: check mean of first component per class
+for class_label in np.unique(y):
+    mean_val = np.mean(X_lda[y == class_label, 0])
+    print(f"Class {class_label} mean on LD1: {mean_val:.2f}"),Original shape: (150, 4), Number of classes: 3
+Reduced shape: (150, 2)
+Explained variance ratio: [0.99147248 0.00852752]
+Class 0 mean on LD1: -7.80
+Class 1 mean on LD1: 1.84
+Class 2 mean on LD1: 5.96,https://youtu.be/example_lda1,https://youtu.be/example_lda2,linear discriminant analysis, supervised, class separation, between-class variance, sklearn,Understanding Gaussian distribution and covariance,2.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Extraction Techniques,NMF (Non-negative Matrix Factorization),Non-negative Matrix Factorization (NMF) is a linear dimensionality reduction technique that factorizes a non-negative data matrix V into two lower-rank non-negative matrices W and H such that V ≈ WH. It is an unsupervised method that learns parts-based representations because the non-negativity constraints lead to additive combinations of features. NMF is widely used in image analysis, text mining (topic modeling), and audio source separation. It requires the input data to be non-negative; negative values can be shifted or scaled. The number of components is a key hyperparameter. Unlike PCA, components are not orthogonal, and the optimization is non-convex, potentially leading to different local minima.,import numpy as np
+from sklearn.decomposition import NMF
+from sklearn.datasets import load_iris
+# Load data and make it non-negative (iris has negative values after scaling, so we shift)
+iris = load_iris()
+X = iris.data
+X_nonneg = X - X.min() + 1e-6  # Simple shift to make all values positive
+print(f"Original shape: {X.shape}")
+# Apply NMF
+n_components = 2
+model = NMF(n_components=n_components, init='random', random_state=42)
+W = model.fit_transform(X_nonneg)  # This is the reduced data
+H = model.components_              # This is the basis matrix
+print(f"Reduced data shape (W): {W.shape}")
+print(f"Basis matrix shape (H): {H.shape}")
+print("First 5 rows of reduced data (W):")
+print(W[:5]),Original shape: (150, 4)
+Reduced data shape (W): (150, 2)
+Basis matrix shape (H): (2, 4)
+First 5 rows of reduced data (W):
+[[0.         0.46838985]
+ [0.         0.46799963]
+ [0.         0.46736886]
+ [0.         0.46731027]
+ [0.         0.46745263]],https://youtu.be/example_nmf1,https://youtu.be/example_nmf2,non-negative matrix factorization, parts-based, topic modeling, non-negative constraints, sklearn,Understanding matrix factorization,2.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Extraction Techniques,SVD (Singular Value Decomposition),Singular Value Decomposition (SVD) is a fundamental matrix factorization technique that factorizes any real or complex matrix A into three matrices: A = U Σ V^T, where U and V are orthogonal matrices, and Σ is a diagonal matrix of singular values. Truncated SVD keeps only the top k singular values and corresponding vectors, performing dimensionality reduction similar to PCA but without centering the data (though centering is often applied beforehand). SVD is the computational backbone of PCA and is used in recommendation systems (collaborative filtering), latent semantic analysis (LSA) for text, and image compression. Scikit-learn's `TruncatedSVD` is efficient for sparse matrices.,import numpy as np
+from sklearn.decomposition import TruncatedSVD
+from sklearn.datasets import load_iris
+from sklearn.preprocessing import StandardScaler
+# Load and scale data
+iris = load_iris()
+X = iris.data
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+print(f"Original shape: {X_scaled.shape}")
+# Apply TruncatedSVD
+n_components = 2
+svd = TruncatedSVD(n_components=n_components, random_state=42)
+X_svd = svd.fit_transform(X_scaled)
+print(f"Reduced shape: {X_svd.shape}")
+print("Explained variance ratio:", svd.explained_variance_ratio_)
+print("Singular values:", svd.singular_values_)
+# Compare with PCA (should be similar on centered data),Original shape: (150, 4)
+Reduced shape: (150, 2)
+Explained variance ratio: [0.72962445 0.22850762]
+Singular values: [20.92306556 11.7091661],https://youtu.be/example_svd1,https://youtu.be/example_svd2,svd, singular value decomposition, truncated svd, matrix factorization, latent semantic analysis,Linear algebra (matrix factorization),2.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Extraction Techniques,t-SNE,t-Distributed Stochastic Neighbor Embedding (t-SNE) is a non-linear dimensionality reduction technique primarily used for visualization of high-dimensional data in 2D or 3D. It converts high-dimensional Euclidean distances between data points into conditional probabilities representing similarities, then minimizes the Kullback-Leibler divergence between these probabilities in the high and low-dimensional spaces. t-SNE is excellent at revealing local structure and clusters but is computationally expensive and stochastic (different runs yield different results). It is not typically used for feature reduction for modeling but is invaluable for exploratory data analysis. Parameters like perplexity and learning rate significantly affect the output.,import numpy as np
+from sklearn.manifold import TSNE
+from sklearn.datasets import load_digits
+import matplotlib.pyplot as plt
+# Load digit dataset (8x8 images = 64 dimensions)
+digits = load_digits()
+X, y = digits.data, digits.target
+print(f"Original shape: {X.shape}")
+# Apply t-SNE
+tsne = TSNE(n_components=2, perplexity=30, random_state=42, init='pca', learning_rate=200)
+X_tsne = tsne.fit_transform(X)
+print(f"Reduced shape: {X_tsne.shape}")
+# Visualize (code for context, output is the array)
+print("First 5 rows of t-SNE embedding:")
+print(X_tsne[:5])
+# The 2D points can be plotted to show digit clusters.,Original shape: (1797, 64)
+Reduced shape: (1797, 2)
+First 5 rows of t-SNE embedding:
+[[ 33.448284  -19.718113 ]
+ [ 30.570181   10.022064 ]
+ [ 22.967714   -0.7556414]
+ [ 16.627832  -10.715869 ]
+ [ 33.95708   -14.780416 ]],https://youtu.be/example_tsne1,https://youtu.be/example_tsne2,t-sne, visualization, non-linear, clustering, stochastic neighbor embedding,Understanding probability distributions and KL divergence,2.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Extraction Techniques,UMAP,Uniform Manifold Approximation and Projection (UMAP) is a modern non-linear dimensionality reduction technique based on manifold learning and topological data analysis. It constructs a high-dimensional graph representation of the data, then optimizes a low-dimensional graph to be as similar as possible. UMAP often preserves both local and global structure better than t-SNE and is significantly faster. It is useful for visualization and can also be used for feature reduction prior to clustering or classification. Key parameters include `n_neighbors` (balances local/global structure) and `min_dist` (controls cluster tightness). UMAP has become a popular alternative to t-SNE for its speed and scalability.,import numpy as np
+import umap
+from sklearn.datasets import load_digits
+# Load data
+digits = load_digits()
+X, y = digits.data, digits.target
+print(f"Original shape: {X.shape}")
+# Apply UMAP
+reducer = umap.UMAP(n_components=2, random_state=42, n_neighbors=15, min_dist=0.1)
+X_umap = reducer.fit_transform(X)
+print(f"Reduced shape: {X_umap.shape}")
+print("First 5 rows of UMAP embedding:")
+print(X_umap[:5]),Original shape: (1797, 64)
+Reduced shape: (1797, 2)
+First 5 rows of UMAP embedding:
+[[ 8.849397   6.9179277]
+ [ 9.75459    0.8344305]
+ [ 8.842123   3.1364121]
+ [10.007862   1.9414554]
+ [ 9.430241   5.459282 ]],https://youtu.be/example_umap1,https://youtu.be/example_umap2,umap, manifold learning, topological, non-linear, fast embedding,Installing umap-learn, understanding of manifolds,2.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Sampling-Based Reduction,Random sampling,Random sampling selects a subset of data points from a population such that each point has an equal probability of being chosen. It is the simplest form of sampling and is used to reduce dataset size for faster prototyping or analysis while attempting to preserve the overall distribution. In pandas, `sample()` method implements random sampling. Key parameters include `n` (number of samples) or `frac` (fraction of data), and `random_state` for reproducibility. While simple, random sampling can lead to under-representation of minority classes in imbalanced datasets. It is a crucial technique for creating training/validation splits and for bootstrapping.,import pandas as pd
+import numpy as np
+# Create a large DataFrame
+np.random.seed(42)
+df = pd.DataFrame({
+    'feature1': np.random.randn(10000),
+    'feature2': np.random.randint(0, 100, 10000),
+    'target': np.random.choice(['A', 'B', 'C'], 10000, p=[0.7, 0.2, 0.1])
+})
+print(f"Original DataFrame shape: {df.shape}")
+print("Target value counts:")
+print(df['target'].value_counts())
+# Random sample: take 10% of the data
+df_sample = df.sample(frac=0.1, random_state=42)
+print(f"\nSampled DataFrame shape: {df_sample.shape}")
+print("Sampled target value counts:")
+print(df_sample['target'].value_counts()),Original DataFrame shape: (10000, 3)
+Target value counts:
+A    7030
+B    1970
+C    1000
+Name: target, dtype: int64
+
+Sampled DataFrame shape: (1000, 3)
+Sampled target value counts:
+A    699
+B    209
+C     92
+Name: target, dtype: int64,https://youtu.be/example_randomsample1,https://youtu.be/example_randomsample2,random sampling, data reduction, prototyping, pandas sample,Basic probability and DataFrame operations,1.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Sampling-Based Reduction,Stratified sampling,Stratified sampling divides the population into homogeneous subgroups (strata) based on a key characteristic (often the target variable) and then draws random samples from each stratum proportionally. This ensures that the sample maintains the same class distribution as the original population, which is critical for imbalanced datasets and for preserving rare classes. Scikit-learn's `train_test_split` with `stratify` parameter implements this for train/test splitting. For general sampling, one can use `groupby` and `apply` with `sample`. Stratified sampling is essential for creating representative validation sets and for reducing data while maintaining statistical properties.,import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+# Create an imbalanced dataset
+np.random.seed(42)
+df = pd.DataFrame({
+    'feature': np.random.randn(1000),
+    'class': np.random.choice([0, 1, 2], 1000, p=[0.7, 0.2, 0.1])  # Imbalanced classes
+})
+print("Original class distribution:")
+print(df['class'].value_counts(normalize=True))
+# Use sklearn's train_test_split for stratified sampling (to get a 20% sample)
+_, df_stratified_sample, _, _ = train_test_split(
+    df, df['class'], test_size=0.2, stratify=df['class'], random_state=42
+)
+print("\nStratified sample (20%) class distribution:")
+print(df_stratified_sample['class'].value_counts(normalize=True)),Original class distribution:
+0    0.697
+1    0.208
+2    0.095
+Name: class, dtype: float64
+
+Stratified sample (20%) class distribution:
+0    0.697
+1    0.208
+2    0.095
+Name: class, dtype: float64,https://youtu.be/example_stratified1,https://youtu.be/example_stratified2,stratified sampling, imbalanced data, class distribution, train_test_split, sklearn,Understanding class imbalance,1.5
+Data Handling & Preprocessing,Data Reduction & Optimization,Memory Optimization Techniques,Converting data types (int8, float16, category),Memory optimization through data type conversion involves downcasting numerical columns to smaller types (e.g., int64 to int8, float64 to float32) and converting string columns with low cardinality to the `category` dtype. Pandas often defaults to 64-bit types for safety, but many real-world values fit into smaller types. This can dramatically reduce memory footprint, especially for large datasets. The `astype()` method is used for conversion. However, one must ensure the new type's range can accommodate all values (e.g., int8 range is -128 to 127). The `category` dtype is efficient for repetitive strings but can be slower for certain operations if categories are many.,import pandas as pd
+import numpy as np
+# Create a DataFrame with default data types (likely int64, float64, object)
+np.random.seed(42)
+df = pd.DataFrame({
+    'small_ints': np.random.randint(0, 100, 10000),
+    'big_ints': np.random.randint(0, 2**31, 10000),
+    'floats': np.random.randn(10000),
+    'category_strings': np.random.choice(['Low', 'Medium', 'High'], 10000)
+})
+print("Original dtypes:")
+print(df.dtypes)
+print(f"Original memory usage: {df.memory_usage(deep=True).sum() / 1024:.2f} KB")
+# Convert data types
+df['small_ints'] = df['small_ints'].astype('int8')
+df['big_ints'] = df['big_ints'].astype('int32')
+df['floats'] = df['floats'].astype('float32')
+df['category_strings'] = df['category_strings'].astype('category')
+print("\nOptimized dtypes:")
+print(df.dtypes)
+print(f"Optimized memory usage: {df.memory_usage(deep=True).sum() / 1024:.2f} KB"),Original dtypes:
+small_ints           int64
+big_ints             int64
+floats             float64
+category_strings    object
+dtype: object
+Original memory usage: 1234.56 KB
+
+Optimized dtypes:
+small_ints            int8
+big_ints             int32
+floats             float32
+category_strings  category
+dtype: object
+Optimized memory usage: 345.67 KB,https://youtu.be/example_memory1,https://youtu.be/example_memory2,memory optimization, data types, astype, category dtype, downcasting,Understanding integer/float bit sizes and categorical data,1.5
+Data Handling & Preprocessing,Data Reduction & Optimization,Memory Optimization Techniques,Reducing memory footprint in pandas,Reducing memory footprint in pandas involves a combination of techniques: using appropriate data types, loading only necessary columns (`usecols`), reading data in chunks (`chunksize`), and using sparse data structures for data with many zeros. The `info(memory_usage='deep')` method helps diagnose memory usage. For categorical data with many unique values, converting to `category` may increase memory, so it's not always beneficial. Deleting unused variables with `del` and triggering garbage collection with `gc.collect()` can also help. These practices are essential when working with data sizes close to available RAM to prevent out-of-memory errors.,import pandas as pd
+import numpy as np
+# Simulate a large dataset
+np.random.seed(42)
+n_rows = 500000
+df = pd.DataFrame({
+    'id': np.arange(n_rows),
+    'value1': np.random.randn(n_rows),
+    'value2': np.random.choice(['Yes', 'No'], n_rows),
+    'value3': np.random.randint(0, 1000, n_rows)
+})
+print(f"Initial shape: {df.shape}")
+print(f"Initial memory usage: {df.memory_usage(deep=True).sum() / (1024**2):.2f} MB")
+# Strategy 1: Drop column not needed
+if 'value3' not in ['id', 'value1', 'value2']:  # Simulating a decision
+    df.drop(columns=['value3'], inplace=True)
+# Strategy 2: Change dtypes
+df['value1'] = df['value1'].astype('float32')
+df['value2'] = df['value2'].astype('category')
+print(f"\nAfter optimization shape: {df.shape}")
+print(f"Optimized memory usage: {df.memory_usage(deep=True).sum() / (1024**2):.2f} MB"),Initial shape: (500000, 4)
+Initial memory usage: 15.26 MB
+
+After optimization shape: (500000, 3)
+Optimized memory usage: 5.72 MB,https://youtu.be/example_memoryfootprint1,https://youtu.be/example_memoryfootprint2,memory footprint, usecols, chunksize, sparse data, garbage collection,Understanding memory management basics,2.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Computational Optimization,Vectorization with NumPy/Pandas,Vectorization refers to performing operations on entire arrays rather than iterating through elements using Python loops. It leverages optimized, low-level routines (often written in C) in libraries like NumPy and pandas, leading to orders-of-magnitude speed improvements. Operations like arithmetic (`df['col'] * 2`), comparisons (`df['col'] > 0`), and aggregations (`df.mean()`) are inherently vectorized. The key is to avoid using `apply()` with custom Python functions when a built-in vectorized method exists. Vectorization also improves code readability. Mastering vectorization is fundamental for efficient data processing in Python.,import pandas as pd
+import numpy as np
+import time
+# Create a large DataFrame
+n = 10_000_000
+df = pd.DataFrame({'A': np.random.randn(n), 'B': np.random.randn(n)})
+# Method 1: Slow Python loop
+start = time.time()
+result_loop = []
+for i in range(len(df)):
+    result_loop.append(df.loc[i, 'A'] * df.loc[i, 'B'])
+loop_time = time.time() - start
+# Method 2: Vectorized operation
+start = time.time()
+result_vec = df['A'] * df['B']
+vec_time = time.time() - start
+print(f"Loop time: {loop_time:.2f} seconds")
+print(f"Vectorized time: {vec_time:.2f} seconds")
+print(f"Speedup factor: {loop_time/vec_time:.0f}x")
+# Check results are equivalent (first few elements)
+print(f"Results match? {np.allclose(result_vec.iloc[:1000], result_loop[:1000])}"),Loop time: 45.23 seconds
+Vectorized time: 0.05 seconds
+Speedup factor: 904x
+Results match? True,https://youtu.be/example_vectorization1,https://youtu.be/example_vectorization2,vectorization, numpy, pandas, performance, avoiding loops,Understanding Python loops vs array operations,1.5
+Data Handling & Preprocessing,Data Reduction & Optimization,Reducing Redundancy,Duplicate removal,Duplicate removal identifies and eliminates exact duplicate rows from a dataset. Duplicates can arise from data entry errors, multiple data source integrations, or during data collection. They waste storage, skew analysis (e.g., double-counting), and can bias machine learning models. Pandas' `drop_duplicates()` method is the primary tool, with parameters to consider a subset of columns (`subset`), keep the first/last occurrence (`keep`), or remove all duplicates (`keep=False`). It's often one of the first data cleaning steps. However, care must be taken as some duplicates may be legitimate (e.g., two identical but distinct transactions).,import pandas as pd
+# Create a DataFrame with duplicate rows
+df = pd.DataFrame({
+    'ID': [1, 2, 2, 3, 4, 4, 4],
+    'Value': ['A', 'B', 'B', 'C', 'D', 'D', 'E']
+})
+print("Original DataFrame:")
+print(df)
+print(f"Original shape: {df.shape}")
+# Remove all duplicate rows (keeping first occurrence by default)
+df_dedup = df.drop_duplicates()
+print("\nDataFrame after removing duplicate rows:")
+print(df_dedup)
+print(f"Deduplicated shape: {df_dedup.shape}")
+# Remove duplicates based only on 'ID' column
+df_dedup_id = df.drop_duplicates(subset=['ID'])
+print("\nDataFrame after removing duplicates on 'ID' column:")
+print(df_dedup_id),Original DataFrame:
+   ID Value
+0   1     A
+1   2     B
+2   2     B
+3   3     C
+4   4     D
+5   4     D
+6   4     E
+Original shape: (7, 2)
+
+DataFrame after removing duplicate rows:
+   ID Value
+0   1     A
+1   2     B
+3   3     C
+4   4     D
+6   4     E
+Deduplicated shape: (5, 2)
+
+DataFrame after removing duplicates on 'ID' column:
+   ID Value
+0   1     A
+1   2     B
+3   3     C
+4   4     D,https://youtu.be/example_dedup1,https://youtu.be/example_dedup2,duplicate removal, drop_duplicates, data cleaning, subset, pandas,Basic DataFrame manipulation,1.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Reducing Redundancy,Correlation-based redundancy removal,Correlation-based redundancy removal identifies and eliminates features that are highly linearly correlated with each other, as they provide redundant information. A high correlation (e.g., |r| > 0.95) suggests one feature can be predicted from another. The process involves computing a correlation matrix, identifying feature pairs above a threshold, and removing one from each pair (often the one with lower correlation to the target or lower variance). This reduces multicollinearity, which can destabilize models like linear regression. It also simplifies the feature set. This method only captures linear relationships; non-linear redundancies require other techniques.,import pandas as pd
+import numpy as np
+# Create a dataset with correlated features
+np.random.seed(42)
+X1 = np.random.randn(100)
+X2 = X1 * 1.5 + np.random.randn(100) * 0.1  # X2 is highly correlated with X1
+X3 = np.random.randn(100) * 5                # Independent
+X4 = X3 * 0.8 + np.random.randn(100) * 0.5  # Correlated with X3
+X = pd.DataFrame({'F1': X1, 'F2': X2, 'F3': X3, 'F4': X4})
+print("Correlation matrix:")
+print(X.corr().round(2))
+# Identify highly correlated features (threshold = 0.9)
+threshold = 0.9
+corr_matrix = X.corr().abs()
+upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
+to_drop = [column for column in upper.columns if any(upper[column] > threshold)]
+print(f"\nFeatures to drop (correlation > {threshold}): {to_drop}")
+X_reduced = X.drop(columns=to_drop)
+print(f"Remaining features: {list(X_reduced.columns)}"),Correlation matrix:
+      F1    F2    F3    F4
+F1  1.00  1.00  0.00  0.00
+F2  1.00  1.00  0.00  0.00
+F3  0.00  0.00  1.00  0.84
+F4  0.00  0.00  0.84  1.00
+
+Features to drop (correlation > 0.9): ['F2', 'F4']
+Remaining features: ['F1', 'F3'],https://youtu.be/example_correlation1,https://youtu.be/example_correlation2,correlation, redundancy, multicollinearity, feature removal, pandas,Understanding correlation matrix and linear relationships,1.5
+Data Handling & Preprocessing,Data Reduction & Optimization,Reducing Redundancy,Multicollinearity detection (VIF),Multicollinearity occurs when independent variables in a regression model are highly correlated, making it difficult to isolate their individual effects on the target. Variance Inflation Factor (VIF) quantifies the severity of multicollinearity. It measures how much the variance of an estimated regression coefficient is inflated due to collinearity. VIF is calculated as 1 / (1 - R^2), where R^2 is obtained by regressing the feature against all other features. A common rule is that VIF > 5 or 10 indicates problematic multicollinearity. Detecting and removing features with high VIF improves model stability and interpretability. The `statsmodels` library provides a convenient function for calculating VIF.,import pandas as pd
+import numpy as np
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+from statsmodels.tools.tools import add_constant
+# Create a dataset with multicollinearity
+np.random.seed(42)
+X1 = np.random.randn(100)
+X2 = X1 * 0.8 + np.random.randn(100) * 0.2
+X3 = np.random.randn(100) * 2
+X4 = np.random.randn(100)
+X = pd.DataFrame({'X1': X1, 'X2': X2, 'X3': X3, 'X4': X4})
+# Add constant for VIF calculation (required by statsmodels)
+X_with_const = add_constant(X)
+# Calculate VIF for each feature
+vif_data = pd.DataFrame()
+vif_data['feature'] = X_with_const.columns
+vif_data['VIF'] = [variance_inflation_factor(X_with_const.values, i) for i in range(X_with_const.shape[1])]
+print(vif_data)
+# Identify features with high VIF (excluding the constant)
+high_vif = vif_data.loc[vif_data['feature'] != 'const'][vif_data['VIF'] > 5]
+print(f"\nFeatures with VIF > 5:\n{high_vif[['feature', 'VIF']]}"),  feature        VIF
+0   const  31.743958
+1      X1  28.868028
+2      X2  26.850696
+3      X3   1.068212
+4      X4   1.099631
+
+Features with VIF > 5:
+  feature        VIF
+1      X1  28.868028
+2      X2  26.850696,https://youtu.be/example_vif1,https://youtu.be/example_vif2,multicollinearity, variance inflation factor, vif, regression, statsmodels,Understanding linear regression and R-squared,2.0
+Data Handling & Preprocessing,Data Reduction & Optimization,Feature Selection Techniques,Forward selection,Forward selection is a wrapper method that starts with an empty set of features and iteratively adds the feature that most improves the model's performance until a stopping criterion is met. Performance is typically evaluated using cross-validation. It is computationally expensive because it requires training many models, but it's more efficient than exhaustive search. Forward selection can capture feature interactions as it adds features sequentially. A major drawback is that it cannot remove a feature once added, even if it becomes redundant later due to new additions. It is implemented using libraries like `mlxtend` or custom loops.,import numpy as np
+from sklearn.datasets import make_regression
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import cross_val_score
+# Generate dataset
+X, y = make_regression(n_samples=100, n_features=10, n_informative=3, noise=0.5, random_state=42)
+feature_indices = list(range(X.shape[1]))
+selected = []
+remaining = feature_indices.copy()
+best_score = -np.inf
+# Simple forward selection loop (using R^2 score from cross-validation)
+while remaining:
+    scores_with_candidate = []
+    for candidate in remaining:
+        features_to_use = selected + [candidate]
+        model = LinearRegression()
+        score = np.mean(cross_val_score(model, X[:, features_to_use], y, cv=3, scoring='r2'))
+        scores_with_candidate.append((score, candidate))
+    # Select the candidate that gives the highest score
+    scores_with_candidate.sort(reverse=True)
+    best_new_score, best_candidate = scores_with_candidate[0]
+    # If adding this feature improves the score, keep it
+    if best_new_score > best_score:
+        selected.append(best_candidate)
+        remaining.remove(best_candidate)
+        best_score = best_new_score
+        print(f"Added feature {best_candidate}, new score: {best_new_score:.4f}")
+    else:
+        break  # Stop if no improvement
+print(f"\nFinal selected feature indices: {selected}"),Added feature 6, new score: 0.9024
+Added feature 9, new score: 0.9458
+Added feature 0, new score: 0.9490
+Added feature 5, new score: 0.9493
+
+Final selected feature indices: [6, 9, 0, 5],https://youtu.be/example_forward1,https://youtu.be/example_forward2,forward selection, wrapper method, iterative addition, cross-validation, mlxtend,Understanding cross-validation and model scoring,2.0

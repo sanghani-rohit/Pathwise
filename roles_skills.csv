@@ -1,0 +1,52 @@
+role_name,category,skills
+Software Engineer,Software Development,{Python,Java,C++,C#,Git,Algorithms,Data Structures,OOP,SQL,REST APIs,Agile,Problem Solving,Communication,Teamwork}
+Web Developer,Web Development,{HTML,CSS,JavaScript,React,Node.js,Next.js,TypeScript,REST APIs,Git,Responsive Design,TailwindCSS,Webpack,Problem Solving,Communication,Teamwork}
+Frontend Developer,Web Development,{HTML,CSS,JavaScript,React,Angular,Vue.js,TypeScript,Redux,TailwindCSS,Webpack,Responsive Design,UI/UX,Git,Problem Solving,Communication,Teamwork}
+Backend Developer,Web Development,{Node.js,Express,Django,Flask,Spring Boot,.NET,PHP,MySQL,PostgreSQL,MongoDB,REST APIs,Authentication,Git,Problem Solving,Communication,Teamwork}
+Full Stack Developer,Web Development,{React,Node.js,Next.js,Django,MySQL,PostgreSQL,APIs,Docker,AWS,Git,TypeScript,GraphQL,Problem Solving,Communication,Teamwork}
+UI Developer,Web Development,{HTML,CSS,JavaScript,Figma,React,TailwindCSS,Material UI,Responsive Design,UX Principles,Problem Solving,Communication,Teamwork}
+API Developer,Backend Development,{REST APIs,GraphQL,Node.js,Express,Python,JSON,OAuth,Postman,OpenAPI,MySQL,Problem Solving,Communication,Teamwork}
+Software Architect,Software Development,{System Design,Microservices,Cloud Architecture,Databases,Docker,Kubernetes,AWS,Design Patterns,Scalability,Problem Solving,Communication,Teamwork}
+Application Developer,Software Development,{Java,Kotlin,C#,.NET,SQL,REST APIs,OOP,Git,Android Studio,Problem Solving,Communication,Teamwork}
+Embedded Systems Engineer,Software Development,{C,C++,Assembly,Python,RTOS,Microcontrollers,IoT,UART,SPI,I2C,Debugging,Problem Solving,Communication,Teamwork}
+DevOps Engineer,Cloud & DevOps,{AWS,Azure,GCP,Docker,Kubernetes,Terraform,Jenkins,GitHub Actions,Bash,Linux,Monitoring,CI/CD,Problem Solving,Communication,Teamwork}
+Cloud Engineer,Cloud & DevOps,{AWS,Azure,GCP,EC2,S3,Lambda,Docker,Kubernetes,Terraform,CloudFormation,Networking,Problem Solving,Communication,Teamwork}
+Cloud Architect,Cloud & DevOps,{AWS,GCP,Azure,VPC,Load Balancing,Kubernetes,Terraform,Security,Cost Optimization,Problem Solving,Communication,Teamwork}
+Site Reliability Engineer (SRE),Cloud & DevOps,{Monitoring,Prometheus,Grafana,Kubernetes,CI/CD,Linux,Incident Management,Docker,Problem Solving,Communication,Teamwork}
+Infrastructure Engineer,Cloud & DevOps,{Linux,Networking,DNS,Load Balancing,Ansible,Terraform,Shell Scripting,AWS,Monitoring,Problem Solving,Communication,Teamwork}
+Platform Engineer,Cloud & DevOps,{Kubernetes,Docker,CI/CD,Jenkins,ArgoCD,Terraform,Python,Linux,Observability,Problem Solving,Communication,Teamwork}
+System Administrator,IT Operations,{Linux,Windows Server,Active Directory,PowerShell,Bash,Networking,Firewalls,Monitoring,Security,Problem Solving,Communication,Teamwork}
+Release Engineer,DevOps,{Jenkins,GitLab CI,Docker,Version Control,Deployment Pipelines,Linux,Automation,Problem Solving,Communication,Teamwork}
+Automation Engineer,DevOps,{Python,Shell Scripting,n8n,Jenkins,Terraform,Ansible,Automation Tools,APIs,CI/CD,Problem Solving,Communication,Teamwork}
+Performance Engineer,DevOps,{Load Testing,JMeter,Locust,Prometheus,Performance Optimization,Profiling,CI/CD,Problem Solving,Communication,Teamwork}
+Data Analyst,Data & AI,{Excel,SQL,Python,Pandas,Power BI,Tableau,Data Cleaning,Visualization,Statistics,Problem Solving,Communication,Teamwork}
+Data Engineer,Data & AI,{Python,SQL,Apache Spark,Airflow,ETL,BigQuery,Snowflake,Data Modeling,Kafka,dbt,Problem Solving,Communication,Teamwork}
+Data Scientist,Data & AI,{Python,Pandas,NumPy,Scikit-learn,TensorFlow,Statistics,Machine Learning,Jupyter,Data Visualization,Problem Solving,Communication,Teamwork}
+Machine Learning Engineer,Data & AI,{Python,TensorFlow,PyTorch,Scikit-learn,Pandas,Feature Engineering,Model Deployment,FastAPI,MLflow,Problem Solving,Communication,Teamwork}
+AI Engineer,Data & AI,{Python,LangChain,LlamaIndex,OpenAI API,Hugging Face,Vector Databases,Prompt Engineering,Transformers,RAG,Problem Solving,Communication,Teamwork}
+Generative AI Engineer,Data & AI,{Python,LangChain,OpenAI,Diffusers,Hugging Face,Stable Diffusion,Prompt Tuning,LLMs,Vector Search,Problem Solving,Communication,Teamwork}
+Agentic AI Engineer,Data & AI,{LangChain,CrewAI,AutoG
+PT,n8n,Pinecone,ChromaDB,Supabase,LlamaIndex,GPT API,Tool Use,Reasoning,Problem Solving,Communication,Teamwork}
+MLOps Engineer,Data & AI,{Python,MLflow,Docker,Kubernetes,TensorFlow Serving,FastAPI,Airflow,CI/CD,AWS SageMaker,Problem Solving,Communication,Teamwork}
+AI Research Scientist,Data & AI,{Python,PyTorch,Deep Learning,NLP,Reinforcement Learning,Transformers,Research Papers,Model Training,Problem Solving,Communication,Teamwork}
+Data Architect,Data & AI,{SQL,Snowflake,Redshift,Data Modeling,ETL,BigQuery,Data Governance,Cloud Architecture,Problem Solving,Communication,Teamwork}
+Cybersecurity Engineer,Security,{Firewalls,IDS,IPS,Nmap,Kali Linux,Wireshark,Snort,Splunk,Metasploit,SIEM,Problem Solving,Communication,Teamwork}
+Security Analyst,Security,{Threat Detection,Risk Analysis,SIEM,Splunk,SOC Monitoring,Incident Response,Python,Problem Solving,Communication,Teamwork}
+Penetration Tester,Security,{Kali Linux,Burp Suite,Metasploit,OWASP,Wireshark,Python,Reconnaissance,Exploits,Problem Solving,Communication,Teamwork}
+SOC Analyst,Security,{Incident Response,SIEM,Log Analysis,Splunk,Threat Hunting,Linux,Network Monitoring,Problem Solving,Communication,Teamwork}
+Security Architect,Security,{Network Security,Cloud Security,Encryption,IAM,Zero Trust,Security Design,Problem Solving,Communication,Teamwork}
+Cloud Security Engineer,Security,{AWS Security Hub,IAM,Azure Defender,Firewalls,SIEM,Threat Modeling,Cloud Security Tools,Problem Solving,Communication,Teamwork}
+Network Engineer,IT Infrastructure,{Cisco,Juniper,Routing,Switching,VLANs,Firewalls,VPNs,TCP/IP,Wireshark,Problem Solving,Communication,Teamwork}
+Network Administrator,IT Infrastructure,{DNS,DHCP,Routing,Switching,Firewalls,Network Monitoring,Linux,Problem Solving,Communication,Teamwork}
+IT Support Engineer,IT Infrastructure,{Windows,Linux,Troubleshooting,Help Desk,Networking,Office 365,Hardware,Problem Solving,Communication,Teamwork}
+System Integration Engineer,IT Infrastructure,{APIs,Middleware,Microservices,Docker,Python,Linux,Problem Solving,Communication,Teamwork}
+Mobile App Developer,Mobile Development,{Flutter,React Native,Kotlin,Swift,Firebase,REST APIs,UI Design,Git,Problem Solving,Communication,Teamwork}
+Android Developer,Mobile Development,{Kotlin,Java,Android Studio,XML,Firebase,Jetpack Compose,REST APIs,Problem Solving,Communication,Teamwork}
+iOS Developer,Mobile Development,{Swift,SwiftUI,Xcode,UIKit,CoreData,Firebase,REST APIs,Problem Solving,Communication,Teamwork}
+Blockchain Developer,Emerging Tech,{Solidity,Hardhat,Web3.js,Ethers.js,Smart Contracts,Truffle,IPFS,Problem Solving,Communication,Teamwork}
+Web3 Developer,Emerging Tech,{React,Solidity,Web3.js,Ethers.js,Blockchain APIs,MetaMask,Problem Solving,Communication,Teamwork}
+AR/VR Developer,Emerging Tech,{Unity,Unreal Engine,C#,Blender,XR SDK,Oculus SDK,ARKit,Problem Solving,Communication,Teamwork}
+Game Developer,Emerging Tech,{Unity,Unreal Engine,C#,C++,Game Physics,3D Modeling,Blender,Problem Solving,Communication,Teamwork}
+IoT Engineer,Emerging Tech,{Python,C,C++,MQTT,Raspberry Pi,Arduino,Node-RED,Sensors,Cloud IoT,Problem Solving,Communication,Teamwork}
+Robotics Engineer,Emerging Tech,{ROS,Python,C++,Sensors,Machine Vision,OpenCV,SLAM,AI Planning,Problem Solving,Communication,Teamwork}
+Quantum Computing Engineer,Emerging Tech,{Python,Qiskit,Cirq,Quantum Gates,Linear Algebra,Quantum Algorithms,Problem Solving,Communication,Teamwork}

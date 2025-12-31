@@ -1,0 +1,22 @@
+-- ============================================
+-- DEPRECATED FILE - DO NOT USE
+-- ============================================
+-- This file has been moved to the new database management system
+-- Please use: database/migrations/002_add_skill_level_improvement.sql
+--
+-- For more information, see: database/README.md
+-- ============================================
+
+-- OLD CONTENT (kept for reference):
+-- Add the new skill_level_improvement column
+-- ALTER TABLE employee_skill_requests
+-- ADD COLUMN IF NOT EXISTS skill_level_improvement TEXT CHECK (skill_level_improvement IN ('Beginner → Intermediate', 'Intermediate → Advanced', 'Advanced → Expert'));
+
+-- ============================================
+-- TO FIX THE ERROR: "Could not find the 'skill_level_improvement' column"
+-- ============================================
+-- 1. Go to: database/migrations/002_add_skill_level_improvement.sql
+-- 2. Copy the SQL content
+-- 3. Run it in your Supabase SQL Editor
+-- 4. See database/README.md for detailed instructions
+-- ============================================
